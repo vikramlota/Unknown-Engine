@@ -1,0 +1,17 @@
+[
+  {
+    "id": "1",
+    "var1": "pl_orbsmax",
+    "var2": "pl_orbper",
+    "method": "dcor",
+    "score": 0.94,
+    "pvalue": 0.0001,
+    "expression": "y = 2.98 * x^1.5",
+    "hypothesis_text": "This relationship reflects gravitational dynamics...",
+    "train_r2": 0.97,
+    "test_r2": 0.95,
+    "is_known_law": true,
+    "known_law_name": "Kepler's Third Law",
+    "sample_points": [{"x": 0.1, "y": 12.3}, {"x": 0.2, "y": 34.5}]
+  }
+]
