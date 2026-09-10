@@ -5,7 +5,7 @@ router = APIRouter()
 
 RESULTS_PATH = "output/results.json"
 
-@router.get("/known_laws")
+@router.get("/known-laws")
 def get_known_laws():
     with open(RESULTS_PATH) as f:
         data = json.load(f)
