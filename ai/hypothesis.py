@@ -14,8 +14,9 @@ def generate_hypothesis_node(state: Dict[str, Any]) -> Dict[str, Any]:
     # TRD NFR-6: System must degrade gracefully if the API is unreachable[cite: 4]
     try:
         # Initialize Gemini (temperature 0.3 to reduce run-to-run wording variance)[cite: 4]
+        model_name = os.getenv("GEMINI_MODEL_NAME", "gemini-1.5-flash")
         llm = ChatGoogleGenerativeAI(
-            model="gemini-1.5-flash", 
+            model=model_name, 
             temperature=0.3 
         )
         
@@ -37,7 +38,13 @@ def generate_hypothesis_node(state: Dict[str, Any]) -> Dict[str, Any]:
                 "score": cand_data.get("score")
             })
             
-            cand_data["hypothesis_text"] = response.content
+            content = response.content
+            if isinstance(content, list) and len(content) > 0 and isinstance(content[0], dict):
+                content = content[0].get("text", str(content))
+            elif not isinstance(content, str):
+                content = str(content)
+                
+            cand_data["hypothesis_text"] = content
             hypotheses.append(cand_data)
             
     except Exception as e:

@@ -9,3 +9,14 @@ export async function getKnownLaws() {
   const res = await fetch(`${BASE_URL}/known-laws`);
   return res.json();
 }
+
+export async function triggerNasaFetch() {
+  const res = await fetch(`${BASE_URL}/fetch-nasa-data`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" }
+  });
+  if (!res.ok) {
+    throw new Error(`API error: ${res.statusText}`);
+  }
+  return res.json();
+}

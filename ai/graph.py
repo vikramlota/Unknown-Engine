@@ -1,55 +1,80 @@
 from typing import TypedDict, Any, Dict, List
+import pandas as pd
+import json
+import os
+from dotenv import load_dotenv
+load_dotenv("ai/.env")
 from langgraph.graph import StateGraph, START, END
 
+# Import the deterministic ML functions
+from data.clean_data import clean_and_engineer
+from ml.screening import run_screening
+from ml.validation import apply_fdr
+from ml.symbolic import fit_expressions
+
+# Import AI nodes
+from ai.hypothesis import generate_hypothesis_node
+from ai.novelty import novelty_check as novelty_check_node
+
 # --- 1. Define the State Schema ---
-# This dict carries the payload through the strict linear sequence.
 class PipelineState(TypedDict):
-    raw_data: Any             # pd.DataFrame from data/
-    features: Any             # pd.DataFrame with engineered columns
-    screened_pairs: List[Dict] # output of pearson/spearman/dcor
-    corrected_pairs: List[Dict] # after FDR correction
-    symbolic_results: List[Dict] # after gplearn expression fitting
-    hypotheses: List[Dict]    # Claude-generated text
-    novelty_results: List[Dict] # FAISS RAG checks
-    validation_results: Any   # Final sanity checks
-    final_output: List[Dict]  # Formatted for output/results.json
+    raw_data: Any             
+    features: Any             
+    screened_pairs: List[Dict] 
+    corrected_pairs: List[Dict] 
+    symbolic_results: List[Dict] 
+    hypotheses: List[Dict]    
+    novelty_results: List[Dict] 
+    validation_results: Any   
+    final_output: List[Dict]  
 
 # --- 2. Define the Nodes ---
-# In reality, these will import and call your functions from ml/ and data/
 def load_data(state: PipelineState):
     print("-> Loading raw exoplanet data...")
-    # df = pd.read_csv("data/raw/exoplanets.csv")
-    return {"raw_data": None} # Replace None with actual data
+    try:
+        df = pd.read_csv("data/processed/exoplanets_clean.csv")
+    except Exception:
+        df = clean_and_engineer()
+    return {"raw_data": df, "features": df} 
 
 def generate_features(state: PipelineState):
-    print("-> Engineering log and ratio features...")
-    # df = add_features(state["raw_data"])
-    return {"features": None}
+    print("-> Features already engineered in data loading step.")
+    return {"features": state["features"]}
 
 def screen_relationships(state: PipelineState):
     print("-> Running Pearson, Spearman, and dcor screening...")
-    # pairs = run_screening(state["features"])
-    return {"screened_pairs": []}
+    pairs = run_screening(state["features"])
+    return {"screened_pairs": pairs}
 
 def fdr_correct(state: PipelineState):
     print("-> Applying Benjamini-Hochberg FDR correction...")
-    # corrected = apply_fdr(state["screened_pairs"])
-    return {"corrected_pairs": []}
+    corrected = apply_fdr(state["screened_pairs"])
+    return {"corrected_pairs": corrected}
 
 def symbolic_regression(state: PipelineState):
     print("-> Fitting symbolic expressions via gplearn...")
-    # expressions = fit_expressions(state["corrected_pairs"])
-    return {"symbolic_results": []}
+    # Run on the top 5 to save time
+    expressions = fit_expressions(state["corrected_pairs"], state["features"], top_k=5)
+    return {"symbolic_results": expressions}
 
 def generate_hypothesis(state: PipelineState):
-    print("-> Querying Claude for plausibility hypotheses...")
-    # hypotheses = generate_hypothesis_node(state["symbolic_results"])
-    return {"hypotheses": []}
+    print("-> Querying LLM for plausibility hypotheses...")
+    cands = []
+    for p in state["symbolic_results"]:
+        p_copy = p.copy()
+        # Map dcor to score for the LLM prompt
+        p_copy["score"] = p_copy.get("dcor", p_copy.get("spearman", 0))
+        cands.append(p_copy)
+    
+    # The existing ai/hypothesis.py expects "corrected_pairs" in the state dict
+    fake_state = {"corrected_pairs": cands}
+    res = generate_hypothesis_node(fake_state)
+    return {"hypotheses": res["hypotheses"]}
 
 def novelty_check(state: PipelineState):
-    print("-> (Stretch) Checking against FAISS abstract corpus...")
-    # novelty = check_novelty(state["hypotheses"])
-    return {"novelty_results": []}
+    print("-> Checking against FAISS abstract corpus...")
+    res = novelty_check_node(state)
+    return res
 
 def validate(state: PipelineState):
     print("-> Validating data payload against JSON contract...")
@@ -57,11 +82,16 @@ def validate(state: PipelineState):
 
 def compile_output(state: PipelineState):
     print("-> Writing to output/results.json...")
-    # with open("output/results.json", "w") as f: json.dump(...)
-    return {"final_output": []}
+    # Add id to each candidate for the frontend
+    final_res = state["novelty_results"]
+    for i, res in enumerate(final_res):
+        res["id"] = str(i + 1)
+        
+    with open("output/results.json", "w") as f:
+        json.dump(final_res, f, indent=2)
+    return {"final_output": final_res}
 
 # --- 3. Wire the StateGraph ---
-# This is a fixed linear sequence. No conditional routing allowed.
 workflow = StateGraph(PipelineState)
 
 # Add all nodes
@@ -89,3 +119,9 @@ workflow.add_edge("compile_output", END)
 
 # Compile the pipeline
 app = workflow.compile()
+
+if __name__ == '__main__':
+    print("--- Starting Pipeline ---")
+    final_state = app.invoke({"raw_data": None})
+    print("--- Pipeline Finished ---")
+    print(f"Generated {len(final_state['final_output'])} final candidate equations.")
