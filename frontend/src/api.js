@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:8000/api";
+const BASE_URL = "https://unknown-engine.vercel.app/";
 
 export async function getCandidates() {
   const res = await fetch(`${BASE_URL}/candidates`);

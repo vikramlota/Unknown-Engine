@@ -1,4 +1,4 @@
-﻿# Unknown-Engine: Autonomous Scientific Law Discovery Platform
+# Unknown-Engine: Autonomous Scientific Law Discovery Platform
 
 An open-source, domain-agnostic scientific machine learning platform that autonomously discovers non-linear mathematical regularities, scaling laws, and governing equations directly from high-dimensional observational and laboratory datasets—without prior physics instruction.
 
@@ -137,9 +137,9 @@ Unknown-Engine/
    source ~/tf_gtx/bin/activate    # Or your preferred virtualenv / conda env
    ```
 
-2. Install the required Python scientific libraries:
+2. Install the required Python scientific and AI libraries:
    ```bash
-   pip install fastapi uvicorn pydantic scipy statsmodels dcor gplearn pandas numpy requests matplotlib
+   pip install -r requirements.txt
    ```
 
 3. Start the FastAPI backend server:
