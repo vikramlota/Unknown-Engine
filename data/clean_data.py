@@ -69,9 +69,13 @@ def clean_and_engineer(raw_path: str = None, output_path: str = None) -> pd.Data
 
     cleaned_df = clean_data(df)
 
-    # Ensure output directory exists
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    cleaned_df.to_csv(output_path, index=False)
+    # Ensure output directory exists (gracefully handles read-only filesystems)
+    try:
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        cleaned_df.to_csv(output_path, index=False)
+        print(f"Saved to: {output_path}")
+    except OSError:
+        print("Read-only filesystem detected; skipping local CSV write.")
 
     print("--- Processing Complete ---")
     print(f"Raw rows: {initial_count}")

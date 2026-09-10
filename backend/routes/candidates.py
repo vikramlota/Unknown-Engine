@@ -1,11 +1,16 @@
 from fastapi import APIRouter, HTTPException
 from typing import List
 import json
-from backend.models import Candidate
+from pathlib import Path
+try:
+    from backend.models import Candidate
+except ImportError:
+    from models import Candidate
 
 router = APIRouter()
 
-RESULTS_PATH = "output/results.json"
+base_dir = Path(__file__).resolve().parent.parent.parent
+RESULTS_PATH = base_dir / "output" / "results.json"
 
 @router.get("/candidates", response_model=List[Candidate])
 def get_candidates():

@@ -78,7 +78,7 @@ export default function KnownLawsPanel({ onNavigate }) {
         <div style={styles.imageSide}>
           <div style={styles.imageContainer}>
             <img 
-              src="http://localhost:8000/plots/kepler_third_law.png" 
+              src="/plots/kepler_third_law.png" 
               alt="Kepler's Third Law Scatter Chart" 
               style={styles.image} 
             />

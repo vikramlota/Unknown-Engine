@@ -1,0 +1,14 @@
+-r requirements.txt
+
+# Offline Scientific & Statistical Computing
+scipy>=1.13.0
+statsmodels>=0.14.0
+dcor>=0.6
+
+# Machine Learning & Symbolic Regression
+scikit-learn>=1.5.0
+gplearn>=0.4.2
+
+# Advanced Agent Graphs & Visualization
+langgraph>=0.2.0
+matplotlib>=3.9.0

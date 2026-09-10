@@ -216,3 +216,15 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Virtual environments
+venv/
+tf_gtc/
+.env
+*.env
+ai/.env
+
+# Node & Vercel
+node_modules/
+.vercel
+

@@ -15,7 +15,10 @@ router = APIRouter()
 
 RESULTS_PATH = base_dir / "output" / "results.json"
 REPORTS_DIR = base_dir / "output" / "reports"
-REPORTS_DIR.mkdir(parents=True, exist_ok=True)
+try:
+    REPORTS_DIR.mkdir(parents=True, exist_ok=True)
+except OSError:
+    pass
 
 class ReportRequest(BaseModel):
     candidate_id: str
@@ -49,8 +52,13 @@ def generate_ai_report(candidate_id: str):
         from langchain_core.prompts import ChatPromptTemplate
         from langchain_core.output_parsers import JsonOutputParser
 
-        model_name = os.getenv("GEMINI_MODEL_NAME", "gemini-3.6-flash")
+        model_name = os.getenv("GEMINI_MODEL_NAME", "gemini-2.5-flash")
+        api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
         llm = ChatGoogleGenerativeAI(
+            model=model_name,
+            temperature=0.4,
+            google_api_key=api_key,
+        ) if api_key else ChatGoogleGenerativeAI(
             model=model_name,
             temperature=0.4
         )
@@ -102,9 +110,12 @@ Return ONLY valid JSON with the exact following schema:
         report_data["candidate"] = candidate
         report_data["generated_at"] = "Live AI Telemetry"
 
-        # Cache report
-        with open(cached_file, "w") as f:
-            json.dump(report_data, f, indent=2)
+        # Cache report (gracefully ignores write failures in read-only serverless filesystems)
+        try:
+            with open(cached_file, "w") as f:
+                json.dump(report_data, f, indent=2)
+        except Exception:
+            pass
 
         return report_data
 
