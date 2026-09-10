@@ -1,43 +1,51 @@
 import React, { useState } from "react";
 import { getVariableInfo, formatExpression, getStrengthLabel } from "../utils/formatters";
+import { ClockIcon, OrbitIcon, ScaleIcon, PlanetIcon, SunIcon, ChartBarIcon, SparklesIcon, CheckIcon } from "./Icons";
+
+function renderTraitIcon(type) {
+  switch (type) {
+    case "clock": return <ClockIcon size={16} color="#38bdf8" />;
+    case "orbit": return <OrbitIcon size={16} color="#00e5ff" />;
+    case "scale": return <ScaleIcon size={16} color="#ffb703" />;
+    case "planet": return <PlanetIcon size={16} color="#38bdf8" />;
+    case "sun": return <SunIcon size={16} color="#fb8500" />;
+    default: return <ChartBarIcon size={16} color="#8b949e" />;
+  }
+}
 
 export default function RelationshipTable({ candidates, onSelect, selectedId }) {
   const [expertMode, setExpertMode] = useState(false);
 
   if (!candidates || candidates.length === 0) {
-    return <div>No candidate relationships discovered yet.</div>;
+    return <div style={{ color: "#8b949e", padding: "20px 0" }}>No candidate relationships discovered yet.</div>;
   }
 
   return (
     <div>
       <div style={styles.topBar}>
-        <div>
-          <h3 style={{ margin: "0 0 5px 0", fontSize: "1.3rem" }}>
-            Discovered Planetary Regularities
-          </h3>
-          <p style={{ margin: 0, color: "#666", fontSize: "0.95rem" }}>
-            Click on any relationship below to view its real telescope data points and the AI's explanation.
-          </p>
+        <div style={{ fontSize: "0.85rem", color: "#8b949e" }}>
+          Showing top statistically significant relationships (Survives Benjamini-Hochberg FDR p &lt; 0.001)
         </div>
 
         <button 
           onClick={() => setExpertMode(!expertMode)}
-          style={styles.modeToggle}
+          className="astro-btn"
+          style={{ fontSize: "0.8rem", padding: "6px 12px" }}
         >
-          {expertMode ? "Switch to 🌟 Plain English Mode" : "Switch to 🔬 Technical / Math Mode"}
+          {expertMode ? "Switch to Plain English" : "Switch to Terminal / Math Mode"}
         </button>
       </div>
 
-      <div style={{ overflowX: "auto", marginTop: "15px" }}>
+      <div style={{ overflowX: "auto", marginTop: "12px" }}>
         <table className="nasa-table">
           <thead>
             <tr>
-              <th style={{ width: "60px" }}>#</th>
+              <th style={{ width: "50px" }}>#</th>
               <th>{expertMode ? "Variable 1" : "First Trait"}</th>
               <th>{expertMode ? "Variable 2" : "Second Trait"}</th>
-              <th>{expertMode ? "Correlation (dcor)" : "Connection Strength"}</th>
-              <th>{expertMode ? "P-Value" : "Statistical Certainty"}</th>
-              <th>{expertMode ? "Fitted Equation" : "Governing Relationship"}</th>
+              <th>{expertMode ? "Score (dcor)" : "Strength"}</th>
+              <th>{expertMode ? "P-Value" : "Significance"}</th>
+              <th>{expertMode ? "Fitted Equation" : "Governing Equation"}</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -53,20 +61,17 @@ export default function RelationshipTable({ candidates, onSelect, selectedId }) 
                   key={c.id} 
                   className={isSelected ? "selected" : ""}
                   onClick={() => onSelect(c)}
-                  style={{
-                    backgroundColor: isSelected ? "#fff5f5" : "transparent"
-                  }}
                 >
-                  <td><strong>{c.id}</strong></td>
+                  <td style={{ color: "#8b949e" }}>{c.id}</td>
                   
                   <td>
                     {expertMode ? (
-                      <code>{c.var1}</code>
+                      <code style={styles.rawCode}>{c.var1}</code>
                     ) : (
                       <div style={styles.traitCell}>
-                        <span style={styles.traitIcon}>{v1.icon}</span>
+                        {renderTraitIcon(v1.iconType)}
                         <div>
-                          <strong>{v1.name}</strong>
+                          <strong style={{ color: "#fff" }}>{v1.name}</strong>
                           <div style={styles.unitText}>{v1.unit}</div>
                         </div>
                       </div>
@@ -75,12 +80,12 @@ export default function RelationshipTable({ candidates, onSelect, selectedId }) 
 
                   <td>
                     {expertMode ? (
-                      <code>{c.var2}</code>
+                      <code style={styles.rawCode}>{c.var2}</code>
                     ) : (
                       <div style={styles.traitCell}>
-                        <span style={styles.traitIcon}>{v2.icon}</span>
+                        {renderTraitIcon(v2.iconType)}
                         <div>
-                          <strong>{v2.name}</strong>
+                          <strong style={{ color: "#fff" }}>{v2.name}</strong>
                           <div style={styles.unitText}>{v2.unit}</div>
                         </div>
                       </div>
@@ -89,12 +94,12 @@ export default function RelationshipTable({ candidates, onSelect, selectedId }) 
 
                   <td>
                     {expertMode ? (
-                      c.score?.toFixed(4)
+                      <span className="cyan-text">{c.score?.toFixed(4)}</span>
                     ) : (
                       <div>
-                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.85rem", marginBottom: "4px" }}>
-                          <span style={{ fontWeight: "bold", color: strength.color }}>{strength.label}</span>
-                          <span>{strength.percent}%</span>
+                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8rem", marginBottom: "3px" }}>
+                          <span style={{ color: strength.color }}>{strength.label}</span>
+                          <span style={{ color: "#8b949e" }}>{strength.percent}%</span>
                         </div>
                         <div style={styles.meterTrack}>
                           <div style={{ ...styles.meterFill, width: `${strength.percent}%`, backgroundColor: strength.color }} />
@@ -105,10 +110,10 @@ export default function RelationshipTable({ candidates, onSelect, selectedId }) 
 
                   <td>
                     {expertMode ? (
-                      c.p_spearman_adj?.toExponential(2)
+                      <span style={{ color: "#8b949e", fontSize: "0.85rem" }}>{c.p_spearman_adj?.toExponential(2)}</span>
                     ) : (
-                      <span style={styles.certaintyBadge}>
-                        ✓ 99.99% Certain (p &lt; 0.001)
+                      <span style={{ color: "#00e5ff", fontSize: "0.8rem", display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                        <CheckIcon size={13} color="#00e5ff" /> p &lt; 0.001
                       </span>
                     )}
                   </td>
@@ -117,7 +122,7 @@ export default function RelationshipTable({ candidates, onSelect, selectedId }) 
                     {expertMode ? (
                       <code style={styles.codeCell}>{c.expression}</code>
                     ) : (
-                      <div style={styles.humanEquation}>
+                      <div style={{ color: "#38bdf8", fontSize: "0.88rem" }}>
                         {formatExpression(c.expression, c.var1, c.var2)}
                       </div>
                     )}
@@ -127,11 +132,12 @@ export default function RelationshipTable({ candidates, onSelect, selectedId }) 
                     <button 
                       style={{
                         ...styles.inspectBtn,
-                        backgroundColor: isSelected ? "#e3000f" : "#111",
-                        color: "#fff"
+                        backgroundColor: isSelected ? "#00e5ff" : "rgba(255, 255, 255, 0.06)",
+                        color: isSelected ? "#060a12" : "#c9d1d9",
+                        border: `1px solid ${isSelected ? "#00e5ff" : "rgba(255, 255, 255, 0.15)"}`
                       }}
                     >
-                      {isSelected ? "Inspecting" : "Inspect →"}
+                      {isSelected ? "Inspecting" : "Inspect"}
                     </button>
                   </td>
                 </tr>
@@ -150,35 +156,26 @@ const styles = {
     justifyContent: "space-between",
     alignItems: "center",
     flexWrap: "wrap",
-    gap: "15px",
-    marginBottom: "15px"
+    gap: "10px",
+    marginBottom: "10px"
   },
-  modeToggle: {
-    padding: "8px 14px",
-    backgroundColor: "#fff",
-    border: "1px solid #111",
-    borderRadius: "4px",
-    cursor: "pointer",
-    fontSize: "0.85rem",
-    fontWeight: "bold",
-    boxShadow: "2px 2px 0px rgba(0,0,0,0.1)"
+  rawCode: {
+    color: "#38bdf8",
+    fontSize: "0.85rem"
   },
   traitCell: {
     display: "flex",
     alignItems: "center",
-    gap: "8px"
-  },
-  traitIcon: {
-    fontSize: "1.3rem"
+    gap: "10px"
   },
   unitText: {
-    fontSize: "0.75rem",
-    color: "#777"
+    fontSize: "0.72rem",
+    color: "#8b949e"
   },
   meterTrack: {
-    width: "120px",
-    height: "6px",
-    backgroundColor: "#eee",
+    width: "110px",
+    height: "5px",
+    backgroundColor: "rgba(255, 255, 255, 0.08)",
     borderRadius: "3px",
     overflow: "hidden"
   },
@@ -186,28 +183,20 @@ const styles = {
     height: "100%",
     borderRadius: "3px"
   },
-  certaintyBadge: {
-    fontSize: "0.8rem",
-    color: "#2e7d32",
-    fontWeight: "bold"
-  },
-  humanEquation: {
-    fontSize: "0.9rem",
-    color: "#111",
-    fontWeight: "500"
-  },
   codeCell: {
-    backgroundColor: "#f4f4f4",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    color: "#00e5ff",
     padding: "3px 6px",
     borderRadius: "3px",
-    fontSize: "0.8rem"
+    fontSize: "0.8rem",
+    border: "1px solid rgba(0, 229, 255, 0.15)"
   },
   inspectBtn: {
-    border: "none",
-    padding: "6px 12px",
-    borderRadius: "2px",
-    fontSize: "0.8rem",
+    padding: "4px 10px",
+    borderRadius: "3px",
+    fontSize: "0.78rem",
     fontWeight: "bold",
-    cursor: "pointer"
+    cursor: "pointer",
+    fontFamily: "'Fira Code', monospace"
   }
 };

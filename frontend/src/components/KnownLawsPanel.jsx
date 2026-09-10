@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { getKnownLaws } from "../api";
+import { CheckIcon, SearchIcon, TelescopeIcon, AtomIcon } from "./Icons";
 
-export default function KnownLawsPanel() {
+export default function KnownLawsPanel({ onNavigate }) {
   const [laws, setLaws] = useState([]);
 
   useEffect(() => {
@@ -13,38 +14,65 @@ export default function KnownLawsPanel() {
   }
 
   return (
-    <div style={styles.container}>
+    <div className="galamo-card" style={styles.container}>
       <div style={styles.badgeRow}>
-        <span style={styles.badge}>Scientific Credibility Anchor</span>
-        <span style={styles.checkBadge}>✓ Benchmark Verified (99.8% Accuracy)</span>
+        <span style={styles.badge}>SCIENTIFIC CREDIBILITY BENCHMARK</span>
+        <span style={styles.checkBadge}>
+          <CheckIcon size={13} color="#00e5ff" style={{ verticalAlign: "middle", marginRight: "4px" }} /> 
+          Kepler Third Law Rediscovered (R² = 0.998)
+        </span>
       </div>
 
       <div style={styles.heroRow}>
         <div style={styles.textSide}>
           <h2 style={styles.title}>
-            The Grand Test: Can the AI Rediscover Famous Historical Laws?
+            Rediscovering Kepler's 1619 Law of Planetary Motion
           </h2>
           <p style={styles.storyText}>
-            In 1619, astronomer <strong>Johannes Kepler</strong> spent decades doing tedious hand calculations to prove that a planet’s year length is tightly governed by its distance from its sun.
+            In 1619, astronomer Johannes Kepler spent decades manually calculating the orbit of Mars to deduce that a planet's year length squared is proportional to its distance cubed.
           </p>
           <p style={styles.storyText}>
-            To prove our engine works, we tested whether it could rediscover Kepler's 3rd Law <strong>completely on its own</strong> using only raw telescope observations from 5,491 alien star systems.
+            To prove our engine works, we tested whether it could rediscover Kepler's Third Law <span className="cyan-text">completely on its own</span> using only raw telescope observations from 5,491 alien star systems—with zero human guidance.
           </p>
 
           <div style={styles.resultBox}>
             <div style={styles.resultItem}>
-              <span style={styles.resultLabel}>Law Rediscovered</span>
-              <strong style={styles.resultVal}>Kepler's Third Law of Planetary Motion</strong>
+              <span style={styles.resultLabel}>Target Benchmark</span>
+              <strong style={styles.resultVal}>Kepler's Third Law (Harmonic Motion)</strong>
             </div>
             <div style={styles.resultItem}>
-              <span style={styles.resultLabel}>Mathematical Accuracy</span>
-              <strong style={{ ...styles.resultVal, color: "#2e7d32" }}>99.8% Exact Match (R² = 0.998)</strong>
+              <span style={styles.resultLabel}>Autonomous Fit Precision</span>
+              <strong style={{ ...styles.resultVal, color: "#00e5ff" }}>99.8% Match (R² = 0.998)</strong>
             </div>
             <div style={styles.resultItem}>
               <span style={styles.resultLabel}>Discovered Equation</span>
-              <code style={styles.codeText}>Year Length ≈ 365 × (Distance from Star)¹·⁵</code>
+              <code style={styles.codeText}>pl_orbper ≈ 365.25 × (pl_orbsmax)¹·⁵</code>
             </div>
           </div>
+
+          {onNavigate && (
+            <div style={{ marginTop: "18px" }}>
+              <button 
+                onClick={() => onNavigate("laws")}
+                style={{
+                  backgroundColor: "rgba(0, 229, 255, 0.08)",
+                  border: "1px solid #00e5ff",
+                  color: "#00e5ff",
+                  padding: "8px 16px",
+                  borderRadius: "4px",
+                  fontSize: "0.82rem",
+                  cursor: "pointer",
+                  fontFamily: "inherit",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px"
+                }}
+              >
+                <AtomIcon size={14} color="#00e5ff" />
+                Explore All Discoverable Physical Laws Catalog →
+              </button>
+            </div>
+          )}
         </div>
 
         <div style={styles.imageSide}>
@@ -55,7 +83,8 @@ export default function KnownLawsPanel() {
               style={styles.image} 
             />
             <div style={styles.imageCaption}>
-              🔍 <strong>Real empirical data:</strong> Every blue point is a real planet discovered in deep space fitting Kepler's curve.
+              <SearchIcon size={12} color="#8b949e" style={{ verticalAlign: "middle", marginRight: "4px" }} />
+              <strong>Empirical observation:</strong> Coordinates represent 5,491 confirmed exoplanets fitting the theoretical curve.
             </div>
           </div>
         </div>
@@ -66,12 +95,7 @@ export default function KnownLawsPanel() {
 
 const styles = {
   container: {
-    backgroundColor: "#ffffff",
-    borderRadius: "8px",
-    padding: "30px",
-    marginBottom: "35px",
-    boxShadow: "0 4px 20px rgba(0,0,0,0.06)",
-    borderLeft: "6px solid #2e7d32"
+    borderLeft: "4px solid #00e5ff"
   },
   badgeRow: {
     display: "flex",
@@ -81,84 +105,86 @@ const styles = {
     flexWrap: "wrap"
   },
   badge: {
-    backgroundColor: "#111",
-    color: "#fff",
+    backgroundColor: "rgba(0, 229, 255, 0.1)",
+    border: "1px solid #00e5ff",
+    color: "#00e5ff",
     fontSize: "0.75rem",
     fontWeight: "bold",
-    padding: "4px 8px",
-    textTransform: "uppercase",
-    letterSpacing: "1px",
-    borderRadius: "2px"
+    padding: "3px 8px",
+    borderRadius: "2px",
+    letterSpacing: "1px"
   },
   checkBadge: {
-    backgroundColor: "#e8f5e9",
-    color: "#2e7d32",
-    fontSize: "0.85rem",
-    fontWeight: "bold",
-    padding: "4px 10px",
-    borderRadius: "4px"
+    backgroundColor: "rgba(0, 229, 255, 0.08)",
+    border: "1px solid rgba(0, 229, 255, 0.3)",
+    color: "#00e5ff",
+    fontSize: "0.8rem",
+    padding: "3px 10px",
+    borderRadius: "2px",
+    display: "inline-flex",
+    alignItems: "center"
   },
   heroRow: {
     display: "flex",
-    gap: "35px",
+    gap: "30px",
     alignItems: "center",
     flexWrap: "wrap"
   },
   textSide: {
-    flex: "1 1 500px"
+    flex: "1 1 480px"
   },
   title: {
-    fontSize: "1.7rem",
-    margin: "0 0 15px 0",
-    color: "#111"
+    fontSize: "1.5rem",
+    margin: "0 0 12px 0",
+    color: "#fff"
   },
   storyText: {
-    fontSize: "1.05rem",
+    fontSize: "0.95rem",
     lineHeight: "1.6",
-    color: "#444",
-    margin: "0 0 15px 0"
+    color: "#c9d1d9",
+    margin: "0 0 12px 0"
   },
   resultBox: {
-    backgroundColor: "#f9f9fb",
-    border: "1px solid #e0e0e0",
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
+    border: "1px solid rgba(255, 255, 255, 0.08)",
     borderRadius: "6px",
-    padding: "18px",
-    marginTop: "20px"
+    padding: "16px",
+    marginTop: "15px"
   },
   resultItem: {
     display: "flex",
     flexDirection: "column",
-    marginBottom: "12px"
+    marginBottom: "10px"
   },
   resultLabel: {
-    fontSize: "0.8rem",
+    fontSize: "0.75rem",
     textTransform: "uppercase",
-    color: "#777",
-    letterSpacing: "0.5px",
-    fontWeight: "bold"
+    color: "#8b949e",
+    letterSpacing: "0.5px"
   },
   resultVal: {
-    fontSize: "1.05rem",
-    color: "#111",
+    fontSize: "1rem",
+    color: "#fff",
     marginTop: "2px"
   },
   codeText: {
-    backgroundColor: "#111",
-    color: "#4caf50",
+    backgroundColor: "#060a12",
+    color: "#00e5ff",
     padding: "6px 10px",
     borderRadius: "4px",
-    fontSize: "0.95rem",
+    fontSize: "0.9rem",
     marginTop: "4px",
-    display: "inline-block"
+    display: "inline-block",
+    border: "1px solid rgba(0, 229, 255, 0.2)"
   },
   imageSide: {
-    flex: "1 1 380px"
+    flex: "1 1 360px"
   },
   imageContainer: {
     borderRadius: "6px",
     overflow: "hidden",
-    border: "1px solid #ddd",
-    boxShadow: "0 2px 10px rgba(0,0,0,0.08)"
+    border: "1px solid rgba(255, 255, 255, 0.12)",
+    backgroundColor: "#000"
   },
   image: {
     width: "100%",
@@ -167,8 +193,11 @@ const styles = {
   },
   imageCaption: {
     padding: "10px 14px",
-    backgroundColor: "#f4f4f4",
-    fontSize: "0.85rem",
-    color: "#555"
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    fontSize: "0.8rem",
+    color: "#8b949e",
+    borderTop: "1px solid rgba(255, 255, 255, 0.06)",
+    display: "flex",
+    alignItems: "center"
   }
 };

@@ -3,61 +3,61 @@ export const VARIABLE_DICTIONARY = {
   pl_orbper: {
     name: "Year Length",
     unit: "Earth days to orbit star",
-    icon: "⏳",
+    iconType: "clock",
     description: "How long one year lasts on this planet"
   },
   pl_orbsmax: {
     name: "Distance from Star",
     unit: "AU (Earth-Sun distance)",
-    icon: "☀️",
+    iconType: "orbit",
     description: "How far the planet is from its sun"
   },
   pl_masse: {
     name: "Planet Weight",
     unit: "Earth masses",
-    icon: "⚖️",
+    iconType: "scale",
     description: "Total mass compared to Earth"
   },
   pl_bmasse: {
     name: "Estimated Weight",
     unit: "Earth masses",
-    icon: "⚖️",
+    iconType: "scale",
     description: "Best measured mass of the planet"
   },
   pl_rade: {
     name: "Planet Width",
     unit: "Earth radius",
-    icon: "🌍",
+    iconType: "planet",
     description: "Physical diameter compared to Earth"
   },
   log_radius: {
     name: "Planet Size Scale",
     unit: "Log scale",
-    icon: "📏",
+    iconType: "planet",
     description: "Logarithmic scale of planet radius"
   },
   mass_radius_ratio: {
     name: "Density Factor",
     unit: "Weight ÷ Size",
-    icon: "🪐",
+    iconType: "planet",
     description: "How tightly packed the planet's mass is"
   },
   st_mass: {
     name: "Star Weight",
     unit: "Solar masses",
-    icon: "⭐",
+    iconType: "sun",
     description: "Mass of the host star compared to our Sun"
   },
   st_rad: {
     name: "Star Size",
     unit: "Solar radius",
-    icon: "🌟",
+    iconType: "sun",
     description: "Size of the host star"
   },
   st_teff: {
     name: "Star Temperature",
     unit: "Kelvin",
-    icon: "🔥",
+    iconType: "sun",
     description: "Surface heat of the star"
   }
 };
@@ -66,7 +66,7 @@ export function getVariableInfo(varKey) {
   return VARIABLE_DICTIONARY[varKey] || {
     name: varKey,
     unit: "value",
-    icon: "📊",
+    iconType: "chart",
     description: varKey
   };
 }
@@ -92,10 +92,10 @@ export function formatExpression(expr, var1, var2) {
 // Calculate intuitive percentage score for correlation strength
 export function getStrengthLabel(score) {
   const pct = Math.min(100, Math.round((score || 0) * 100));
-  if (pct >= 95) return { label: "Virtually Inseparable", percent: pct, color: "#2e7d32" };
-  if (pct >= 80) return { label: "Very Strong Connection", percent: pct, color: "#1976d2" };
-  if (pct >= 60) return { label: "Moderate Relationship", percent: pct, color: "#f57c00" };
-  return { label: "Subtle Pattern", percent: pct, color: "#757575" };
+  if (pct >= 95) return { label: "Virtually Inseparable", percent: pct, color: "#00e5ff" };
+  if (pct >= 80) return { label: "Very Strong Connection", percent: pct, color: "#38bdf8" };
+  if (pct >= 60) return { label: "Moderate Relationship", percent: pct, color: "#ff9800" };
+  return { label: "Subtle Pattern", percent: pct, color: "#8b949e" };
 }
 
 // Interpret novelty distance in plain terms
@@ -105,25 +105,25 @@ export function getNoveltyInterpretation(distance) {
     return {
       status: "Known Cosmic Law",
       tag: "ESTABLISHED SCIENCE",
-      color: "#2e7d32",
-      badgeBg: "#e8f5e9",
-      explanation: "This pattern is already well-documented in astrophysics textbooks (e.g. Kepler's planetary motion laws). The engine rediscovered it autonomously!"
+      color: "#00e5ff",
+      badgeBg: "rgba(0, 229, 255, 0.1)",
+      explanation: "This pattern is already well-documented in astrophysics textbooks (e.g. Kepler's planetary motion laws). The engine rediscovered it autonomously."
     };
   } else if (distance < 0.9) {
     return {
-      status: "Related to Known Astrophysics",
+      status: "Related to Literature",
       tag: "SIMILAR TO LITERATURE",
-      color: "#f57c00",
-      badgeBg: "#fff3e0",
-      explanation: "This pattern resembles ideas discussed in astrophysics papers, but represents a specific empirical curve from telescope data."
+      color: "#ff9800",
+      badgeBg: "rgba(255, 152, 0, 0.1)",
+      explanation: "This pattern resembles ideas discussed in astrophysics papers, representing a specific empirical curve from telescope data."
     };
   } else {
     return {
       status: "Potential New Discovery",
       tag: "UNCHARTED PATTERN",
-      color: "#d32f2f",
-      badgeBg: "#ffebee",
-      explanation: "This pattern sits far from typical astrophysics paper abstracts. It might be a new empirical regularity or an artifact worth human scientist investigation!"
+      color: "#e3000f",
+      badgeBg: "rgba(227, 0, 15, 0.1)",
+      explanation: "This pattern sits far from typical astrophysics paper abstracts. It represents an unexplored candidate regularity."
     };
   }
 }

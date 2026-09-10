@@ -1,31 +1,42 @@
 import React from "react";
 import { getNoveltyInterpretation } from "../utils/formatters";
+import { DocumentTextIcon, SparklesIcon } from "./Icons";
 
-export default function HypothesisPanel({ candidate }) {
-  if (!candidate) {
-    return null;
-  }
+export default function HypothesisPanel({ candidate, onGenerateReport, isGeneratingReport }) {
+  if (!candidate) return null;
 
-  const { hypothesis_text, novelty_distance } = candidate;
+  const { hypothesis_text, novelty_distance, id } = candidate;
   const novelty = getNoveltyInterpretation(novelty_distance);
 
   return (
-    <div className="nasa-card" style={{ borderTop: "4px solid #e3000f" }}>
+    <div className="galamo-card" style={{ borderTop: "3px solid #00e5ff" }}>
       <div style={styles.topBadgeRow}>
-        <span style={styles.badge}>AI Astrophysicist Analysis</span>
+        <span style={styles.badge}>ASTROPHYSICAL REASONING</span>
         {novelty && (
           <span style={{ 
             ...styles.noveltyTag, 
-            backgroundColor: novelty.badgeBg, 
-            color: novelty.color,
-            border: `1px solid ${novelty.color}` 
+            backgroundColor: "rgba(0, 229, 255, 0.1)", 
+            color: "#00e5ff",
+            border: `1px solid rgba(0, 229, 255, 0.3)` 
           }}>
             {novelty.tag}
           </span>
         )}
       </div>
 
-      <h3 style={styles.title}>Physical Explanation for Humans</h3>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "10px", marginBottom: "14px" }}>
+        <h3 style={styles.title}>Physical Interpretation</h3>
+        
+        <button
+          onClick={() => onGenerateReport && onGenerateReport(id)}
+          disabled={isGeneratingReport}
+          className="astro-btn"
+          style={{ fontSize: "0.8rem", padding: "6px 12px" }}
+        >
+          <DocumentTextIcon size={14} color="currentColor" />
+          {isGeneratingReport ? "Synthesizing Report..." : "Full AI Report"}
+        </button>
+      </div>
       
       <div style={styles.textBox}>
         <p style={styles.hypothesisBody}>
@@ -36,9 +47,9 @@ export default function HypothesisPanel({ candidate }) {
       {novelty && (
         <div style={styles.noveltySection}>
           <div style={styles.noveltyHeader}>
-            <strong>Originality Meter (Literature Check)</strong>
-            <span style={{ fontWeight: "bold", color: novelty.color }}>
-              Score: {novelty_distance?.toFixed(2)}
+            <span>Literature Novelty Audit (FAISS)</span>
+            <span style={{ color: "#00e5ff", fontWeight: "bold" }}>
+              Distance: {novelty_distance?.toFixed(2)}
             </span>
           </div>
 
@@ -50,18 +61,15 @@ export default function HypothesisPanel({ candidate }) {
             <div style={{
               ...styles.noveltyBarFill,
               width: `${Math.min(100, Math.max(15, (novelty_distance || 0) * 80))}%`,
-              backgroundColor: novelty.color
+              backgroundColor: "#00e5ff"
             }} />
-          </div>
-          <div style={styles.noveltyScaleLabels}>
-            <span>← Well Known in Physics Papers</span>
-            <span>Completely Unexplored Space →</span>
           </div>
         </div>
       )}
 
       <div style={styles.disclaimer}>
-        ⚠️ <strong>Note for non-physicists:</strong> The statistical connection between these variables is 100% real empirical data, while the explanation above is proposed by Google Gemini 1.5/3.0 to help researchers investigate the physical cause.
+        <SparklesIcon size={13} color="#00e5ff" style={{ verticalAlign: "middle", marginRight: "4px" }} />
+        <strong>Neuro-Symbolic Architecture:</strong> Mathematical equations are derived deterministically via GP, while physical semantics are interpreted by Google Gemini.
       </div>
     </div>
   );
@@ -72,88 +80,82 @@ const styles = {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: "15px",
+    marginBottom: "12px",
     flexWrap: "wrap",
-    gap: "10px"
+    gap: "8px"
   },
   badge: {
-    backgroundColor: "#111",
-    color: "#fff",
-    padding: "4px 8px",
-    fontSize: "0.75rem",
+    backgroundColor: "rgba(0, 229, 255, 0.1)",
+    border: "1px solid #00e5ff",
+    color: "#00e5ff",
+    padding: "2px 8px",
+    fontSize: "0.7rem",
     fontWeight: "bold",
-    textTransform: "uppercase",
-    letterSpacing: "1px",
-    borderRadius: "2px"
+    borderRadius: "2px",
+    letterSpacing: "1px"
   },
   noveltyTag: {
-    fontSize: "0.75rem",
+    fontSize: "0.72rem",
     fontWeight: "bold",
-    padding: "3px 8px",
-    borderRadius: "3px",
+    padding: "2px 8px",
+    borderRadius: "2px",
     letterSpacing: "0.5px"
   },
   title: {
-    textTransform: "uppercase",
-    letterSpacing: "1px",
-    margin: "0 0 15px 0",
-    fontSize: "1.2rem",
-    color: "#111"
+    margin: 0,
+    fontSize: "1.15rem",
+    color: "#fff"
   },
   textBox: {
-    backgroundColor: "#f9f9fb",
-    borderLeft: "4px solid #e3000f",
-    padding: "16px 20px",
-    borderRadius: "0 6px 6px 0",
-    marginBottom: "20px"
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
+    borderLeft: "3px solid #00e5ff",
+    padding: "14px 18px",
+    borderRadius: "0 4px 4px 0",
+    marginBottom: "16px"
   },
   hypothesisBody: {
-    fontSize: "1.05rem",
-    lineHeight: "1.7",
-    color: "#222",
+    fontSize: "0.95rem",
+    lineHeight: "1.65",
+    color: "#c9d1d9",
     margin: 0
   },
   noveltySection: {
-    backgroundColor: "#fff",
-    border: "1px solid #e0e0e0",
-    padding: "18px",
-    borderRadius: "6px",
-    marginBottom: "20px"
+    backgroundColor: "rgba(0, 0, 0, 0.3)",
+    border: "1px solid rgba(255, 255, 255, 0.08)",
+    padding: "14px",
+    borderRadius: "4px",
+    marginBottom: "16px"
   },
   noveltyHeader: {
     display: "flex",
     justifyContent: "space-between",
-    fontSize: "0.95rem",
-    marginBottom: "8px"
+    fontSize: "0.85rem",
+    marginBottom: "6px",
+    color: "#8b949e"
   },
   noveltyDesc: {
-    fontSize: "0.88rem",
-    color: "#555",
-    lineHeight: "1.5",
-    margin: "0 0 12px 0"
+    fontSize: "0.82rem",
+    color: "#8b949e",
+    lineHeight: "1.4",
+    margin: "0 0 10px 0"
   },
   noveltyBarTrack: {
-    height: "8px",
-    backgroundColor: "#eee",
-    borderRadius: "4px",
+    height: "6px",
+    backgroundColor: "rgba(255, 255, 255, 0.08)",
+    borderRadius: "3px",
     overflow: "hidden"
   },
   noveltyBarFill: {
     height: "100%",
-    borderRadius: "4px"
-  },
-  noveltyScaleLabels: {
-    display: "flex",
-    justifyContent: "space-between",
-    fontSize: "0.75rem",
-    color: "#888",
-    marginTop: "6px"
+    borderRadius: "3px"
   },
   disclaimer: {
-    fontSize: "0.8rem",
-    color: "#666",
-    lineHeight: "1.5",
-    borderTop: "1px solid #eee",
-    paddingTop: "12px"
+    fontSize: "0.78rem",
+    color: "#8b949e",
+    lineHeight: "1.4",
+    borderTop: "1px solid rgba(255, 255, 255, 0.08)",
+    paddingTop: "10px",
+    display: "flex",
+    alignItems: "center"
   }
 };

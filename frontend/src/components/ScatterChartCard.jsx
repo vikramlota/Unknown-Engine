@@ -1,14 +1,17 @@
 import React from "react";
 import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { getVariableInfo } from "../utils/formatters";
+import { TelescopeIcon, SparklesIcon } from "./Icons";
 
 export default function ScatterChartCard({ candidate }) {
   if (!candidate) {
     return (
-      <div className="nasa-card" style={styles.placeholderCard}>
-        <span style={{ fontSize: "2rem" }}>👈</span>
-        <h3>Select any planetary relationship above to explore its data</h3>
-        <p style={{ color: "#777" }}>Each point on the chart represents a real planet discovered in deep space.</p>
+      <div className="galamo-card" style={styles.placeholderCard}>
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: "10px" }}>
+          <TelescopeIcon size={32} color="#00e5ff" />
+        </div>
+        <h3 style={{ color: "#fff" }}>Select a relationship above to view empirical data</h3>
+        <p style={{ color: "#8b949e", fontSize: "0.85rem" }}>Each cyan coordinate corresponds to a confirmed exoplanet in the NASA catalog.</p>
       </div>
     );
   }
@@ -18,52 +21,52 @@ export default function ScatterChartCard({ candidate }) {
   const v2 = getVariableInfo(var2);
 
   return (
-    <div className="nasa-card">
+    <div className="galamo-card">
       <div style={styles.header}>
         <div>
-          <span style={styles.badge}>Real Telescope Observations</span>
+          <span style={styles.badge}>TELESCOPE SCATTER PLOT</span>
           <h3 style={styles.title}>
-            {v2.icon} {v2.name} vs {v1.icon} {v1.name}
+            <span style={{ color: "#00e5ff" }}>{v2.name}</span> vs <span style={{ color: "#38bdf8" }}>{v1.name}</span>
           </h3>
           <p style={styles.subtitle}>
-            Each red dot is a real alien planet measured by NASA space telescopes.
+            Sampled across NASA space telescope photometric observations.
           </p>
         </div>
       </div>
 
       {(!sample_points || sample_points.length === 0) ? (
-        <div style={{ padding: "40px 20px", textAlign: "center", color: "#666" }}>
-          <p>No sample points available for this pair.</p>
+        <div style={{ padding: "40px 20px", textAlign: "center", color: "#8b949e" }}>
+          No sample points available for this pair.
         </div>
       ) : (
-        <div style={{ width: "100%", height: 380, marginTop: "10px" }}>
+        <div style={{ width: "100%", height: 320, marginTop: "10px" }}>
           <ResponsiveContainer>
-            <ScatterChart margin={{ top: 20, right: 30, bottom: 40, left: 30 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eaeaea" />
+            <ScatterChart margin={{ top: 20, right: 20, bottom: 30, left: 10 }}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255, 255, 255, 0.08)" />
               <XAxis 
                 type="number" 
                 dataKey="x" 
                 name={v1.name} 
-                tick={{ fill: "#666", fontSize: 12 }} 
-                axisLine={{ stroke: "#111" }}
+                tick={{ fill: "#8b949e", fontSize: 11 }} 
+                axisLine={{ stroke: "rgba(255, 255, 255, 0.15)" }}
                 label={{ 
                   value: `${v1.name} (${v1.unit}) →`, 
                   position: "insideBottom", 
-                  offset: -20,
-                  style: { fill: "#111", fontWeight: "bold", fontSize: 12 }
+                  offset: -15,
+                  style: { fill: "#8b949e", fontSize: 11, fontFamily: "'Fira Code', monospace" }
                 }}
               />
               <YAxis 
                 type="number" 
                 dataKey="y" 
                 name={v2.name} 
-                tick={{ fill: "#666", fontSize: 12 }} 
-                axisLine={{ stroke: "#111" }}
+                tick={{ fill: "#8b949e", fontSize: 11 }} 
+                axisLine={{ stroke: "rgba(255, 255, 255, 0.15)" }}
                 label={{ 
-                  value: `↑ ${v2.name} (${v2.unit})`, 
+                  value: `↑ ${v2.name}`, 
                   angle: -90, 
                   position: "insideLeft",
-                  style: { fill: "#111", fontWeight: "bold", fontSize: 12 }
+                  style: { fill: "#8b949e", fontSize: 11, fontFamily: "'Fira Code', monospace" }
                 }}
               />
               <Tooltip 
@@ -73,27 +76,24 @@ export default function ScatterChartCard({ candidate }) {
                     const data = payload[0].payload;
                     return (
                       <div style={styles.tooltip}>
-                        <strong>Exoplanet Observation</strong>
-                        <div style={{ marginTop: "4px" }}>
-                          {v1.name}: <strong>{data.x.toFixed(2)}</strong> {v1.unit}
-                        </div>
-                        <div>
-                          {v2.name}: <strong>{data.y.toFixed(2)}</strong> {v2.unit}
-                        </div>
+                        <div style={{ color: "#00e5ff", fontWeight: "bold", marginBottom: "4px" }}>Exoplanet Observation</div>
+                        <div>{v1.name}: <strong>{data.x.toFixed(2)}</strong> {v1.unit}</div>
+                        <div>{v2.name}: <strong>{data.y.toFixed(2)}</strong> {v2.unit}</div>
                       </div>
                     );
                   }
                   return null;
                 }}
               />
-              <Scatter name="Planets" data={sample_points} fill="#e3000f" opacity={0.7} />
+              <Scatter name="Exoplanets" data={sample_points} fill="#00e5ff" opacity={0.75} />
             </ScatterChart>
           </ResponsiveContainer>
         </div>
       )}
 
       <div style={styles.explainerFooter}>
-        💡 <strong>What this means:</strong> When the dots form a clear line or curve instead of a scattered cloud, it proves these two traits are bound by a universal physical law.
+        <SparklesIcon size={14} color="#00e5ff" style={{ verticalAlign: "middle", marginRight: "4px" }} />
+        <strong>Statistical regularities:</strong> Collinear clustering verifies deterministic mathematical dependence.
       </div>
     </div>
   );
@@ -102,53 +102,52 @@ export default function ScatterChartCard({ candidate }) {
 const styles = {
   placeholderCard: {
     textAlign: "center",
-    padding: "60px 20px",
-    color: "#444"
+    padding: "60px 20px"
   },
   header: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    borderBottom: "1px solid #eee",
-    paddingBottom: "15px"
+    borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
+    paddingBottom: "12px"
   },
   badge: {
     display: "inline-block",
-    backgroundColor: "#111",
-    color: "#fff",
-    fontSize: "0.75rem",
+    backgroundColor: "rgba(0, 229, 255, 0.1)",
+    border: "1px solid #00e5ff",
+    color: "#00e5ff",
+    fontSize: "0.7rem",
     fontWeight: "bold",
-    padding: "3px 8px",
-    textTransform: "uppercase",
-    letterSpacing: "1px",
+    padding: "2px 6px",
     borderRadius: "2px",
-    marginBottom: "8px"
+    letterSpacing: "1px",
+    marginBottom: "6px"
   },
   title: {
-    fontSize: "1.4rem",
-    margin: "0 0 5px 0",
-    color: "#111"
+    fontSize: "1.25rem",
+    margin: "0 0 4px 0",
+    color: "#fff"
   },
   subtitle: {
     margin: 0,
-    fontSize: "0.95rem",
-    color: "#666"
+    fontSize: "0.85rem",
+    color: "#8b949e"
   },
   tooltip: {
-    backgroundColor: "#fff",
-    border: "2px solid #111",
+    backgroundColor: "rgba(6, 10, 18, 0.95)",
+    border: "1px solid #00e5ff",
     padding: "10px 14px",
-    boxShadow: "3px 3px 0px rgba(0,0,0,0.15)",
-    fontSize: "0.85rem"
+    borderRadius: "4px",
+    fontSize: "0.8rem",
+    color: "#e6edf3",
+    boxShadow: "0 4px 16px rgba(0,0,0,0.5)"
   },
   explainerFooter: {
-    marginTop: "15px",
-    padding: "12px 16px",
-    backgroundColor: "#f8f9fa",
+    marginTop: "12px",
+    padding: "10px 14px",
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
     borderRadius: "4px",
-    borderLeft: "4px solid #111",
-    fontSize: "0.9rem",
-    color: "#444",
-    lineHeight: "1.5"
+    borderLeft: "3px solid #00e5ff",
+    fontSize: "0.8rem",
+    color: "#8b949e",
+    display: "flex",
+    alignItems: "center"
   }
 };
